@@ -1,37 +1,27 @@
-<script setup lang="ts">
-import { ref } from 'vue';
 
-const dialog = ref(false); // Controla la visibilidad del diálogo para agregar palabra
-const deleteDialog = ref(false); // Controla la visibilidad del diálogo de eliminación
-const showWordsDialog = ref(false); // Controla la visibilidad del diálogo para mostrar palabras
+<script setup lang="ts">
+	import { ref } from 'vue'
+const dialog = ref(false); // Controla la visibilidad del diálogo
 const newWord = ref("");   // Almacena la nueva palabra ingresada
 const words = ref<string[]>([]); // Lista de palabras ingresadas
-const selectedWords = ref<string[]>([]); // Palabras seleccionadas para eliminar
 
-// Nuevas referencias para filas y columnas
-const rows = ref(0);
-const cols = ref(0);
-const matrix = ref<string[][]>([]); // Matriz para la sopa de letras
-
-// Función para abrir el cuadro de diálogo para agregar palabra
+// Función para abrir el cuadro de diálogo
 const prompt = () => {
   dialog.value = true;
 };
 
-// Función para manejar la aceptación del diálogo para agregar palabra
+// Función para manejar la aceptación del diálogo
 const acceptDialog = () => {
   if (newWord.value.trim() !== "") {
-    const trimmedWord = newWord.value.trim();
-    words.value.push(trimmedWord);
+    words.value.push(newWord.value.trim());
     newWord.value = ""; // Limpia el input
   }
   dialog.value = false;
 };
 
-// Función para cancelar el diálogo
 const cancelDialog = () => {
   dialog.value = false;
-  newWord.value = ""; // Limpia el input
+  newWord.value = ""; 
 };
 
 // Función para abrir el cuadro de diálogo de eliminación
@@ -154,27 +144,46 @@ const removeWordFromMatrix = (word: string) => {
 };
 </script>
 
+
 <template>
 	<div id="container">
 		<div id="top_part">
-			<a href="" id="bars">
-				<font-awesome-icon :icon="['fas', 'bars']" style="font-size:28px;" />
-			</a>
+			<div id="bar_container_btn">
+				<a href="javascript:void(0);" id="bars" @click="toggleSidebar">
+					<font-awesome-icon :icon="['fas', 'bars']" style="font-size:48px;" />
+				</a>
+
+			</div>
 		</div>
-		<div id="mainPart">
+
+		<div id="mainPart" :class="{'sidebar-visible': sidebarVisible}">
+			<!-- Sidebar -->
+			<div v-if="sidebarVisible" id="sidebar" style="margin-top:30px; z-index: 3; margin-left:250px; margin-top:75px;">
+				<ul>
+					<li>
+						<div class="links">
+							<a href="#">asOpción 1</a>
+						</div>
+					</li>
+					<li>
+						<div class="links">
+							<a href="#">Opción 2</a>
+						</div>
+					</li>
+						<li>
+							<div class="links">
+								<a href="#">Opción 3</a>
+							</div>
+						</li>
+
+				</ul>
+			</div>
+
 			<div id="left_main">
-				<div id="sopa_box">
-					<!-- Mostrar la matriz aquí -->
-					<table>
-						<tbody>
-							<tr v-for="(row, rowIndex) in matrix" :key="rowIndex">
-								<td v-for="(cell, colIndex) in row" :key="colIndex">{{ cell }}</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+				<div id="sopa_box"></div>
 				<div id="export_options"></div>
 			</div>
+
 			<div id="right_main">
 				<div id="top">
 					<h1 id="title">Generador de Sopa de Letras</h1>
@@ -188,11 +197,11 @@ const removeWordFromMatrix = (word: string) => {
 						<label for="">Columnas: </label>
 						<input type="number" v-model.number="cols" @change="generateMatrix" />
 					</div>
-					<!-- Botones -->
+					<!-- Botón para insertar nueva palabra -->
 					<q-btn label="Insertar Nueva Palabra" color="primary" @click="prompt" />
-					<q-btn label="Eliminar Palabra" color="primary" @click="openDeleteDialog" />
-					<q-btn label="Palabras" color="primary" @click="showWords" />
-					<q-btn label="Revolver" color="secondary" @click="shuffleAndInsertWordsInMatrix" /> <!-- Nuevo botón -->
+						<!-- Eliminar palabra -->
+
+						<q-btn label="Eliminar Palabra" color="primary" @click="prompt" />
 				</div>
 				<div id="bottom">
 					<button id="shuffle_btn">Revolver</button>
@@ -200,66 +209,29 @@ const removeWordFromMatrix = (word: string) => {
 			</div>
 		</div>
 
-        <!-- Diálogo para insertar nueva palabra -->
-        <q-dialog v-model="dialog">
-            <q-card style="width: 400px; max-width: 90vw;">
-                <q-card-section>
-                    <div class="text-h6">Ingresa una nueva palabra</div>
-                </q-card-section>
-                <q-card-section>
-                    <q-input outlined v-model="newWord" label="Nueva palabra" auto-focus />
-                </q-card-section>
-                <q-card-actions align="right">
-                    <q-btn flat label="Cancelar" color="negative" @click="cancelDialog" />
-                    <q-btn flat label="Aceptar" color="positive" @click.prevent="acceptDialog()" />
-                </q-card-actions>
-            </q-card>
-        </q-dialog>
-
-        <!-- Diálogo para eliminar palabras -->
-        <q-dialog v-model="deleteDialog">
-            <q-card style="width: 400px; max-width: 90vw;">
-                <q-card-section>
-                    <div class="text-h6">Selecciona las palabras a eliminar:</div>
-                </q-card-section>
-                <q-card-section>
-                    <div v-for="word in words" :key="word">
-                        <q-checkbox v-model="selectedWords" :label="word" :val=word />
-                    </div>
-                </q-card-section>
-                <q-card-actions align="right">
-                    <q-btn flat label="Cancelar" color="negative" @click.prevent="cancelDeleteDialog()" />
-                    <q-btn flat label="Eliminar" color="positive" @click.prevent="acceptDeleteDialog()" />
-                </q-card-actions>
-            </q-card>
-        </q-dialog>
-
-        <!-- Diálogo para mostrar las palabras ingresadas -->
-        <q-dialog v-model="showWordsDialog">
-            <q-card style="width: 400px; max-width: 90vw;">
-                <q-card-section>
-                    <div class="text-h6">Palabras ingresadas:</div>
-                </q-card-section>
-                <q-card-section>
-                    <ul>
-                        <li v-for="word in words" :key="word">{{ word }}</li> <!-- Muestra cada palabra en una lista -->
-                    </ul>
-                    <p v-if="words.length === 0">No hay palabras ingresadas.</p> <!-- Mensaje si no hay palabras -->
-                </q-card-section>
-                <q-card-actions align="right">
-                    <q-btn flat label="Cerrar" color="positive" @click.prevent="showWordsDialog = false" />
-                </q-card-actions>
-            </q-card>
-        </q-dialog>
-
-    </div>
+		<!-- Diálogo para insertar nueva palabra -->
+		<q-dialog v-model="dialog">
+			<q-card style="width: 400px; max-width: 90vw;">
+				<q-card-section>
+					<div class="text-h6">Ingresa una nueva palabra</div>
+				</q-card-section>
+				<q-card-section>
+					<q-input
+							outlined
+							v-model="newWord"
+							label="Nueva palabra"
+							autofocus
+							/>
+				</q-card-section>
+				<q-card-actions align="right">
+					<q-btn flat label="Cancelar" color="negative" @click="cancelDialog" />
+						<q-btn flat label="Aceptar" color="positive" @click="acceptDialog" />
+				</q-card-actions>
+			</q-card>
+		</q-dialog>
+	</div>
 </template>
-
-
-
-
 <style scoped>
-
 #title{
 	font-size: 30px;
 }
@@ -271,7 +243,22 @@ const removeWordFromMatrix = (word: string) => {
 }
 
 #bars {
-	margin-left: 0.8em;
+	margin-left: 1.8em;
+	color: #222;
+	display: inline-block;
+}
+
+#bars:active, #bars:visited{
+	color: #0f0;
+}
+
+.links{
+	width: 100%;
+	display: flex;
+	align-items: center;
+	padding-left: 30px;
+	height: 70px;
+	border-bottom: 1px solid #a2a2a2;
 }
 
 #top_part{
@@ -289,15 +276,18 @@ const removeWordFromMatrix = (word: string) => {
 }
 
 #export_options{
-	width: 20%;
+	width: 80%;
 	height: 10%;
-	background-color: floralwhite;
+	display: flex;
+	justify-content: center;
+	align-items:center;
 }
 
 #mainPart{
 	height: 95%;
 	background-color: #99d3f7;
 	display: flex;
+	transition: margin-left 0.3s ease;
 }
 
 #left_main{
@@ -323,6 +313,72 @@ const removeWordFromMatrix = (word: string) => {
 	justify-content: center;
 }
 
+#pdf_option{
+	height: 90%;
+	width: 50%;
+	background-color: red;
+	border-radius: 12px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#sidebar {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 250px;
+	height: 100vh;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	transition: transform 0.3s ease;
+	transform: translateX(-100%);
+	color: #222;
+}
+
+#sidebar:first-child{
+	border-top: 1px solid #a2a2a2;
+}
+
+#sidebar ul {
+	list-style-type: none;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+#sidebar li {
+	translate: all .3s ease;
+}
+
+#sidebar li a {
+	color: white;
+	text-decoration: none;
+	font-size: 18px;
+	translate: all .3s ease;
+	color: #222;
+}
+
+#sidebar li a:hover {
+	color: green;
+
+}
+
+
+/* Aplica la animación cuando el sidebar se muestra */
+#sidebar.v-show {
+	transform: translateX(0); /* Muestra el sidebar */
+	transition: all .3s ease;
+}
+
+/* Desplazar la parte principal hacia la derecha cuando el sidebar está visible */
+#mainPart.sidebar-visible {
+	margin-left: 250px; /* Empuja el contenido hacia la derecha */
+}
 
 #middle{
 	height: 30%;
@@ -332,14 +388,6 @@ const removeWordFromMatrix = (word: string) => {
 	justify-items: center;
 }
 
-
-#bottoms{
-	height: 15%;
-	margin-bottom: 9em;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
 
 #bottom{
 	height: 15%;
@@ -360,7 +408,6 @@ const removeWordFromMatrix = (word: string) => {
 }
 
 #bottom > #shuffle_btn:hover{
-
 	background-color: #aaa;
 	transition: all .12s ease;
 }
@@ -384,5 +431,6 @@ input, input:hover, input::selection, input:active{
 	border: none;
 	background-color: transparent;
 }
-
 </style>
+
+
