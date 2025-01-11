@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import Main from './components/Login.vue'
+import Main from './components/MainWindow.vue'
 </script>
-
 <template>
-	<Main/>
+  <Main/>
+
+  <main>
+    <RouterView />
+  </main>
+  
 </template>
 
 <style scoped>
