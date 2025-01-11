@@ -1,5 +1,12 @@
 <script setup lang="ts">
-	import { ref, computed } from 'vue';
+
+	import { ref } from 'vue';
+	import { useRoute } from 'vue-router';
+
+const route = useRoute()
+const goToAbout = () => {
+      route.push('/login')
+    }
 
 const dialog = ref(false);
 const newWord = ref("");   
@@ -65,7 +72,7 @@ generarSopa();
 				<ul>
 					<li>
 						<div class="links">
-							<a href="#">asOpción 1</a>
+							<a @click="goToAbout">Login</a>
 						</div>
 					</li>
 					<li>
