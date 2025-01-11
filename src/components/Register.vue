@@ -27,6 +27,8 @@
   
   <script setup>
   import { ref } from 'vue';
+  import { useRouter } from 'vue-router';
+  const router = useRouter();
   
   const correo = ref('');
   const clave = ref('');
@@ -39,6 +41,8 @@
     }
     // Aquí puedes agregar la lógica para crear el usuario
     alert('Usuario creado con éxito');
+    router.push({ name: 'Home' })
+    
   };
   </script>
   

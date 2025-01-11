@@ -1,12 +1,5 @@
 <script setup lang="ts">
 	import { ref } from 'vue';
-	import { useRoute } from 'vue-router';
-
-const route = useRoute()
-const goToAbout = () => {
-      router.push('/login')
-    }
-
 const dialog = ref(false);
 const newWord = ref("");   
 const words = ref<string[]>([]);
@@ -52,13 +45,12 @@ const cancelDialog = () => {
 				<ul>
 					<li>
 						<div class="links">
-							<a @click="goToAbout">Login</a>
-						</div>
+							<router-link to="/Register">Registrar</router-link>
+						</div>		
 					</li>
 					<li>
 						<div class="links">
-							<router-link to="/Login">Go to Foo</router-link>
-							<router-view></router-view>
+							<router-link to="/Login">Iniciar sesion</router-link>
 						</div>
 					</li>
 						<li>

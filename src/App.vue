@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import Main from './components/MainWindow.vue'
+import Hola from './components/Hola.vue'
 </script>
 <template>
-  <Main/>
-
-  <main>
-    <RouterView />
-  </main>
-  
+  <Hola/>
 </template>
 
 <style scoped>
