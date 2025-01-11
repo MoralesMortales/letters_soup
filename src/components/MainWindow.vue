@@ -4,7 +4,7 @@
 
 const route = useRoute()
 const goToAbout = () => {
-      route.push('/login')
+      router.push('/login')
     }
 
 const dialog = ref(false);
@@ -57,7 +57,8 @@ const cancelDialog = () => {
 					</li>
 					<li>
 						<div class="links">
-							<a href="#">Opción 2</a>
+							<router-link to="/Login">Go to Foo</router-link>
+							<router-view></router-view>
 						</div>
 					</li>
 						<li>

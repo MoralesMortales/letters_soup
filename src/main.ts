@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import router from './router'
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -15,7 +14,7 @@ import 'quasar/dist/quasar.css';
 import type { routerKey } from 'vue-router';
 
 library.add(faBars);
-App.use(router)
+
 createApp(App)
   .use(Quasar, {
     plugins: {}, // Plugins de Quasar si son necesarios
