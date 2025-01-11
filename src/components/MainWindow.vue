@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-	import { ref } from 'vue'
+	import { ref, computed } from 'vue';
 
 const dialog = ref(false);
 const newWord = ref("");   
@@ -26,7 +26,26 @@ const acceptDialog = () => {
 const cancelDialog = () => {
   dialog.value = false;
   newWord.value = ""; 
+
 };
+
+const filas = ref(30);
+const columnas = ref(20);
+const sopaDeLetras = ref<string[][]>([]);
+
+const generarCaracterAleatorio = (): string => {
+  const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  return caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+};
+
+const generarSopa = () => {
+    if (filas.value < 1 || columnas.value < 1) return;
+  sopaDeLetras.value = Array.from({ length: filas.value }, () =>
+    Array.from({ length: columnas.value }, generarCaracterAleatorio)
+  );
+};
+
+generarSopa();
 </script>
 
 
@@ -55,17 +74,27 @@ const cancelDialog = () => {
 							<a href="#">Opción 2</a>
 						</div>
 					</li>
-						<li>
-							<div class="links">
-								<a href="#">Opción 3</a>
-							</div>
-						</li>
+					<li>
+						<div class="links">
+							<a href="#">Opción 3</a>
+						</div>
+					</li>
 
 				</ul>
 			</div>
 
 			<div id="left_main">
-				<div id="sopa_box"></div>
+				<div id="sopa_box">
+					<table style="padding:15px; width:100%; height:100%;">
+						<tbody>
+						<tr v-for="(fila, i) in sopaDeLetras" :key="i">
+							<td v-for="(letra, j) in fila" :key="j">
+								{{ letra }}
+							</td>
+						</tr>
+					</tbody>
+					</table>
+				</div>
 				<div id="export_options">
 					<div id="pdf_option">
 						<h4>PDF</h4>
@@ -153,7 +182,7 @@ const cancelDialog = () => {
 	width: 80%;
 	height: 80%;
 	margin-top: 35px;
-	background-color: darkslategrey;
+	background-color: #999;
 }
 
 #export_options{
