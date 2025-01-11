@@ -108,7 +108,7 @@ generarSopa();
 				<div id="middle">
 					<div class="buttom" id="rows">
 						<label for="">Filas: </label>
-						<input type="number" v-model.number="rows" @change="generateMatrix" />
+						<input type="number" v-model.number="filas" @input="generarSopa" min="1" />
 					</div>
 					<div class="buttom" id="cols">
 						<label for="">Columnas: </label>
