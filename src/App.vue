@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Main from './components/MainWindow.vue'
+import Main from './components/Login.vue'
 </script>
 
 <template>
