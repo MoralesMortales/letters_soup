@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 	import { ref, computed } from 'vue';
 
@@ -108,10 +107,12 @@ generarSopa();
 				</div>
 				<div id="middle">
 					<div class="buttom" id="rows">
-						<label for="">Filas: </label><input type="text" />
+						<label for="">Filas: </label>
+						<input type="number" v-model.number="rows" @change="generateMatrix" />
 					</div>
 					<div class="buttom" id="cols">
-						<label for="">Columnas: </label><input type="text" />
+						<label for="">Columnas: </label>
+						<input type="number" v-model.number="cols" @change="generateMatrix" />
 					</div>
 					<q-btn label="Insertar Nueva Palabra" color="primary" @click="prompt" />
 						<q-btn label="Eliminar Palabra" color="primary" @click="prompt" />
@@ -341,5 +342,3 @@ input, input:hover, input::selection, input:active{
 	background-color: transparent;
 }
 </style>
-
-
