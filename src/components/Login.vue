@@ -1,21 +1,19 @@
 <template>
-    <div class="crear-usuario">
-      <h2>Crear Usuario</h2>
-      <form @submit.prevent="crearUsuario">
-        <div class="input-group">
-          <label for="correo">Ingrese un correo</label>
-          <input type="email" id="correo" v-model="correo" required />
+    <div class="page-container">
+        <div class="login-container">
+        <h2>Iniciar Sesión</h2>
+        <form @submit.prevent="login">
+            <div class="input-group">
+            <label for="correo">Ingrese su correo</label>
+            <input type="email" id="correo" v-model="correo" required />
+            </div>
+            <div class="input-group">
+            <label for="clave">Ingrese su clave</label>
+            <input type="password" id="clave" v-model="clave" required />
+            </div>
+            <button type="submit">Ingreso</button>
+        </form>
         </div>
-        <div class="input-group">
-          <label for="clave">Ingrese una Clave</label>
-          <input type="password" id="clave" v-model="clave" required />
-        </div>
-        <div class="input-group">
-          <label for="confirmar-clave">Confirme su clave</label>
-          <input type="password" id="confirmar-clave" v-model="confirmarClave" required />
-        </div>
-        <button type="submit">CREAR</button>
-      </form>
     </div>
   </template>
   
@@ -24,20 +22,24 @@
   
   const correo = ref('');
   const clave = ref('');
-  const confirmarClave = ref('');
   
-  const crearUsuario = () => {
-    if (clave.value !== confirmarClave.value) {
-      alert('Las claves no coinciden');
-      return;
-    }
-    // Aquí puedes agregar la lógica para crear el usuario
-    alert('Usuario creado con éxito');
+  const login = () => {
+    // Aquí puedes agregar la lógica para iniciar sesión
+    alert('Inicio de sesión exitoso');
   };
   </script>
   
   <style scoped>
-  .crear-usuario {
+
+  .page-container {
+    background-color: #99d3f7; /* Color de fondo para toda la página */
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-container {
     max-width: 400px;
     margin: auto;
     padding: 1em;
@@ -50,7 +52,8 @@
   }
   
   .input-group {
-    margin-bottom: 1em;
+    margin-top: 1em;
+    margin-bottom: 2em;
   }
   
   label {
@@ -67,7 +70,7 @@
   button {
     width: 100%;
     padding: 0.7em;
-    background: #4CAF50;
+    background: rgb(28, 111, 255);
     color: white;
     border: none;
     border-radius: 4px;
@@ -75,7 +78,7 @@
   }
   
   button:hover {
-    background: #45a049;
+    background: blue;
   }
   </style>
   

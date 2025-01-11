@@ -1,20 +1,23 @@
-
 <script setup lang="ts">
 	import { ref } from 'vue'
-const dialog = ref(false); // Controla la visibilidad del diálogo
-const newWord = ref("");   // Almacena la nueva palabra ingresada
-const words = ref<string[]>([]); // Lista de palabras ingresadas
 
-// Función para abrir el cuadro de diálogo
+const dialog = ref(false);
+const newWord = ref("");   
+const words = ref<string[]>([]);
+const sidebarVisible = ref(false); // Controla la visibilidad del sidebar
+
+const toggleSidebar = () => {
+  sidebarVisible.value = !sidebarVisible.value; // Alterna la visibilidad
+};
+
 const prompt = () => {
   dialog.value = true;
 };
 
-// Función para manejar la aceptación del diálogo
 const acceptDialog = () => {
   if (newWord.value.trim() !== "") {
     words.value.push(newWord.value.trim());
-    newWord.value = ""; // Limpia el input
+    newWord.value = "";
   }
   dialog.value = false;
 };
@@ -22,125 +25,6 @@ const acceptDialog = () => {
 const cancelDialog = () => {
   dialog.value = false;
   newWord.value = ""; 
-};
-
-// Función para abrir el cuadro de diálogo de eliminación
-const openDeleteDialog = () => {
-  deleteDialog.value = true;
-};
-
-// Función para manejar la aceptación del diálogo de eliminación
-const acceptDeleteDialog = () => {
-  for (const word of selectedWords.value) {
-    words.value = words.value.filter(w => w !== word); // Elimina de la lista de palabras
-    removeWordFromMatrix(word); // Elimina de la matriz
-  }
-  selectedWords.value = []; // Limpia las selecciones
-  deleteDialog.value = false;
-};
-
-// Función para cancelar el diálogo de eliminación
-const cancelDeleteDialog = () => {
-  deleteDialog.value = false;
-  selectedWords.value = []; // Limpia las selecciones
-};
-
-// Función para abrir el cuadro de diálogo que muestra las palabras ingresadas
-const showWords = () => {
-  showWordsDialog.value = true;
-};
-
-// Función para generar la matriz basada en filas y columnas ingresadas
-const generateMatrix = () => {
-  matrix.value = Array.from({ length: rows.value }, () =>
-    Array.from({ length: cols.value }, () => "")
-  );
-};
-
-// Función para insertar una palabra en la matriz en una dirección aleatoria
-const insertWordInMatrixRandomly = (word: string) => {
-  const directions = ['horizontal', 'vertical', 'diagonal'];
-  const direction = directions[Math.floor(Math.random() * directions.length)];
-
-  let row, col;
-
-  if (direction === 'horizontal') {
-    row = Math.floor(Math.random() * rows.value);
-    col = Math.floor(Math.random() * (cols.value - word.length));
-
-    for (let i = 0; i < word.length; i++) {
-      matrix.value[row][col + i] = word[i];
-    }
-
-  } else if (direction === 'vertical') {
-    row = Math.floor(Math.random() * (rows.value - word.length));
-    col = Math.floor(Math.random() * cols.value);
-
-    for (let i = 0; i < word.length; i++) {
-      matrix.value[row + i][col] = word[i];
-    }
-
-  } else if (direction === 'diagonal') {
-    row = Math.floor(Math.random() * (rows.value - word.length));
-    col = Math.floor(Math.random() * (cols.value - word.length));
-
-    for (let i = 0; i < word.length; i++) {
-      matrix.value[row + i][col + i] = word[i];
-    }
-  }
-};
-
-// Función para revolver e insertar todas las palabras en la matriz
-const shuffleAndInsertWordsInMatrix = () => {
-  generateMatrix(); // Genera una nueva matriz vacía
-
-  for (const word of words.value) {
-    insertWordInMatrixRandomly(word);
-  }
-};
-
-// Función para eliminar una palabra de la matriz
-const removeWordFromMatrix = (word: string) => {
-  for (let rowIndex = 0; rowIndex < rows.value; rowIndex++) {
-    for (let colIndex = 0; colIndex < cols.value; colIndex++) {
-      if (matrix.value[rowIndex][colIndex] === word[0]) { // Busca por coincidencia con la primera letra
-
-        // Verifica si hay coincidencia horizontal
-        if (
-          colIndex <= cols.value - word.length &&
-          matrix.value[rowIndex].slice(colIndex, colIndex + word.length).join('') === word
-        ) {
-          for (let i = 0; i < word.length; i++) {
-            matrix.value[rowIndex][colIndex + i] = ""; // Reemplaza con vacío
-          }
-          return; // Sale después de eliminar una coincidencia
-        }
-
-        // Verifica si hay coincidencia vertical
-        if (
-          rowIndex <= rows.value - word.length &&
-          matrix.value.slice(rowIndex, rowIndex + word.length).map(row => row[colIndex]).join('') === word
-        ) {
-          for (let i = 0; i < word.length; i++) {
-            matrix.value[rowIndex + i][colIndex] = ""; // Reemplaza con vacío
-          }
-          return; // Sale después de eliminar una coincidencia
-        }
-
-        // Verifica si hay coincidencia diagonal
-        if (
-          rowIndex <= rows.value - word.length &&
-          colIndex <= cols.value - word.length &&
-          Array.from({ length: word.length }, (_, i) => matrix.value[rowIndex + i][colIndex + i]).join('') === word
-        ) {
-          for (let i = 0; i < word.length; i++) {
-            matrix.value[rowIndex + i][colIndex + i] = ""; // Reemplaza con vacío
-          }
-          return; // Sale después de eliminar una coincidencia
-        }
-      }
-    }
-  }
 };
 </script>
 
@@ -181,7 +65,11 @@ const removeWordFromMatrix = (word: string) => {
 
 			<div id="left_main">
 				<div id="sopa_box"></div>
-				<div id="export_options"></div>
+				<div id="export_options">
+					<div id="pdf_option">
+						<h4>PDF</h4>
+					</div>
+				</div>
 			</div>
 
 			<div id="right_main">
@@ -197,10 +85,7 @@ const removeWordFromMatrix = (word: string) => {
 						<label for="">Columnas: </label>
 						<input type="number" v-model.number="cols" @change="generateMatrix" />
 					</div>
-					<!-- Botón para insertar nueva palabra -->
 					<q-btn label="Insertar Nueva Palabra" color="primary" @click="prompt" />
-						<!-- Eliminar palabra -->
-
 						<q-btn label="Eliminar Palabra" color="primary" @click="prompt" />
 				</div>
 				<div id="bottom">
@@ -216,12 +101,7 @@ const removeWordFromMatrix = (word: string) => {
 					<div class="text-h6">Ingresa una nueva palabra</div>
 				</q-card-section>
 				<q-card-section>
-					<q-input
-							outlined
-							v-model="newWord"
-							label="Nueva palabra"
-							autofocus
-							/>
+					<q-input outlined v-model="newWord" label="Nueva palabra" autofocus />
 				</q-card-section>
 				<q-card-actions align="right">
 					<q-btn flat label="Cancelar" color="negative" @click="cancelDialog" />
@@ -231,6 +111,8 @@ const removeWordFromMatrix = (word: string) => {
 		</q-dialog>
 	</div>
 </template>
+
+
 <style scoped>
 #title{
 	font-size: 30px;
@@ -388,7 +270,6 @@ const removeWordFromMatrix = (word: string) => {
 	justify-items: center;
 }
 
-
 #bottom{
 	height: 15%;
 	margin-bottom: 9em;
@@ -432,5 +313,3 @@ input, input:hover, input::selection, input:active{
 	background-color: transparent;
 }
 </style>
-
-
