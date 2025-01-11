@@ -112,7 +112,7 @@ generarSopa();
 					</div>
 					<div class="buttom" id="cols">
 						<label for="">Columnas: </label>
-						<input type="number" v-model.number="cols" @change="generateMatrix" />
+						<input type="number" id="columnasInput" v-model.number="columnas" @input="generarSopa" min="1" />
 					</div>
 					<q-btn label="Insertar Nueva Palabra" color="primary" @click="prompt" />
 						<q-btn label="Eliminar Palabra" color="primary" @click="prompt" />
