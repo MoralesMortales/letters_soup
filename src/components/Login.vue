@@ -19,13 +19,18 @@
   
   <script setup>
   import { ref } from 'vue';
+  import { useRouter } from 'vue-router';
   
   const correo = ref('');
   const clave = ref('');
   
+  const router = useRouter()
+
   const login = () => {
     // Aquí puedes agregar la lógica para iniciar sesión
     alert('Inicio de sesión exitoso');
+    router.push({ name: 'Home' })
+    
   };
   </script>
   
