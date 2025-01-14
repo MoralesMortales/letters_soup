@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import Hola from './components/Hola.vue'
+import BaseComponents from './components/BaseComponents.vue'
 </script>
 <template>
-  <Hola/>
+  <BaseComponents/>
 </template>
 
 <style scoped>

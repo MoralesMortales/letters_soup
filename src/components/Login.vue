@@ -2,7 +2,7 @@
     <div class="page-container">
         <div class="login-container">
         <h2>Iniciar Sesión</h2>
-        <form @submit.prevent="login">
+        <form @submit.prevent="checkUserExistence">
             <div class="input-group">
             <label for="correo">Ingrese su correo</label>
             <input type="email" id="correo" v-model="correo" required />
@@ -11,7 +11,7 @@
             <label for="clave">Ingrese su clave</label>
             <input type="password" id="clave" v-model="clave" required />
             </div>
-            <button type="submit">Ingreso</button>
+            <button type="submit" onclick="getUserByEmail()">Ingreso</button>
         </form>
         </div>
     </div>
@@ -20,8 +20,8 @@
   <script setup>
   import { ref } from 'vue';
   import { useRouter } from 'vue-router';
+  import { getUserByEmail } from '../services/axios'; 
   
-  const correo = ref('');
   const clave = ref('');
   
   const router = useRouter()
@@ -29,9 +29,31 @@
   const login = () => {
     // Aquí puedes agregar la lógica para iniciar sesión
     alert('Inicio de sesión exitoso');
-    router.push({ name: 'Home' })
     
   };
+
+// Definimos las variables reactivas usando `ref`
+const correo = ref('');
+const user = ref(null);
+const loading = ref(false);
+const error = ref(null);
+
+getUserByEmail(correo.value, clave.value)
+  .then(user => {
+  if (user.email == email && user.password == clave){
+    router.push({ name: 'Home' })
+    console.log('User found:', user);
+    router.push({ name: 'Home' })
+  }
+
+  else {
+  console.log('no sirvbeeeeeeeeeeeeeeeeee')
+  }
+
+  })
+  .catch(error => {
+    console.error('Error:', error.message);
+  });
   </script>
   
   <style scoped>
