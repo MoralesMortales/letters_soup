@@ -12,8 +12,9 @@ const instance = axios.create({
 });
 
 // Function to find user by email and fetch user details by ID
-export async function getUserByEmail(email) {
+export async function getUserByEmail(email, clave) {
   try {
+    console.log('you ingreased ', email, ' ',clave)
     // Fetch all users
     const response = await instance.get('/');
     const users = response.data;

@@ -1,51 +1,3 @@
-<script setup lang="ts">
-
-	import { ref } from 'vue';
-const dialog = ref(false);
-const newWord = ref("");   
-const words = ref<string[]>([]);
-const sidebarVisible = ref(false); // Controla la visibilidad del sidebar
-
-const toggleSidebar = () => {
-  sidebarVisible.value = !sidebarVisible.value; // Alterna la visibilidad
-};
-
-const prompt = () => {
-  dialog.value = true;
-};
-
-const acceptDialog = () => {
-  if (newWord.value.trim() !== "") {
-    words.value.push(newWord.value.trim());
-    newWord.value = "";
-  }
-  dialog.value = false;
-};
-
-const cancelDialog = () => {
-  dialog.value = false;
-  newWord.value = ""; 
-
-};
-
-const filas = ref(30);
-const columnas = ref(20);
-const sopaDeLetras = ref<string[][]>([]);
-
-const generarCaracterAleatorio = (): string => {
-  const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  return caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-};
-
-const generarSopa = () => {
-    if (filas.value < 1 || columnas.value < 1) return;
-  sopaDeLetras.value = Array.from({ length: filas.value }, () =>
-    Array.from({ length: columnas.value }, generarCaracterAleatorio)
-  );
-};
-
-generarSopa();
-</script>
 
 
 <template>
@@ -84,16 +36,15 @@ generarSopa();
 
 			<div id="left_main">
 				<div id="sopa_box">
-					<table style="padding:15px; width:100%; height:100%;">
-						<tbody>
-						<tr v-for="(fila, i) in sopaDeLetras" :key="i">
-							<td v-for="(letra, j) in fila" :key="j">
-								{{ letra }}
-							</td>
-						</tr>
-					</tbody>
-					</table>
-				</div>
+					<table style="padding:15px; width:100%; height:100%; text-align: center; vertical-align: middle;">
+    <tbody>
+        <tr v-for="(fila, i) in sopaDeLetras" :key="i">
+            <td v-for="(letra, j) in fila" :key="j" style="text-align: center; vertical-align: middle;">
+                {{ letra }}
+            </td>
+        </tr>
+    </tbody>
+</table>				</div>
 				<div id="export_options">
 					<div id="pdf_option">
 						<h4>PDF</h4>
@@ -140,6 +91,65 @@ generarSopa();
 		</q-dialog>
 	</div>
 </template>
+<script setup lang="ts">
+
+	import { ref } from 'vue';
+const dialog = ref(false);
+const newWord = ref("");   
+const words = ref<string[]>([]);
+const sidebarVisible = ref(false); // Controla la visibilidad del sidebar
+
+const toggleSidebar = () => {
+  sidebarVisible.value = !sidebarVisible.value; // Alterna la visibilidad
+};
+
+const prompt = () => {
+  dialog.value = true;
+};
+
+const acceptDialog = () => {
+  if (newWord.value.trim() !== "") {
+    words.value.push(newWord.value.trim());
+    newWord.value = "";
+  }
+  dialog.value = false;
+};
+
+const cancelDialog = () => {
+  dialog.value = false;
+  newWord.value = ""; 
+
+};
+
+const filas = ref(30);
+const columnas = ref(20);
+const sopaDeLetras = ref<string[][]>([]);
+
+const generarCaracterAleatorio = (): string => {
+  const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  return caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+};
+
+const generarSopa = () => {
+    if (filas.value < 1 || columnas.value < 1) return;
+  sopaDeLetras.value = Array.from({ length: filas.value }, () =>
+    Array.from({ length: columnas.value }, generarCaracterAleatorio)
+  );
+};
+
+  const user = ref(null);
+const getUserFromLocalStorage = () => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      user.value = JSON.parse(userData);  // Convierte el string de vuelta a un objeto
+    }
+  };
+
+getUserFromLocalStorage();
+
+console.log('+++',user.value)
+generarSopa();
+</script>
 
 
 <style scoped>

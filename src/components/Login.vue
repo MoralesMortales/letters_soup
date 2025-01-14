@@ -11,7 +11,7 @@
             <label for="clave">Ingrese su clave</label>
             <input type="password" id="clave" v-model="clave" required />
             </div>
-            <button type="submit" onclick="getUserByEmail()">Ingreso</button>
+            <button type="submit" @click="comprobe">Ingreso</button>
         </form>
         </div>
     </div>
@@ -25,6 +25,12 @@
   const clave = ref('');
   
   const router = useRouter()
+  const correo = ref('');
+  const user = ref(null);
+  const loading = ref(false);
+  const error = ref(null);
+
+console.log('+++',user.value)
 
   const login = () => {
     // Aquí puedes agregar la lógica para iniciar sesión
@@ -33,14 +39,26 @@
   };
 
 // Definimos las variables reactivas usando `ref`
-const correo = ref('');
-const user = ref(null);
-const loading = ref(false);
-const error = ref(null);
 
-getUserByEmail(correo.value, clave.value)
+const comprobe = () => {
+let email = correo.value;
+let my_clave = clave.value
+
+const getUserFromLocalStorage = () => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      user.value = JSON.parse(userData);  // Convierte el string de vuelta a un objeto
+    }
+  };
+
+getUserFromLocalStorage();
+
+console.log('+++',user.value)
+
+getUserByEmail(email, my_clave)
   .then(user => {
-  if (user.email == email && user.password == clave){
+  if (user.email == email && user.password == my_clave){
+    localStorage.setItem('user', JSON.stringify(user));
     router.push({ name: 'Home' })
     console.log('User found:', user);
     router.push({ name: 'Home' })
@@ -54,6 +72,7 @@ getUserByEmail(correo.value, clave.value)
   .catch(error => {
     console.error('Error:', error.message);
   });
+}
   </script>
   
   <style scoped>

@@ -26,25 +26,37 @@
   </template>
   
   <script setup>
-  import { ref } from 'vue';
+  import axios from 'axios';
+import { ref } from 'vue';
   import { useRouter } from 'vue-router';
   const router = useRouter();
   
   const correo = ref('');
   const clave = ref('');
   const confirmarClave = ref('');
-  
-  const crearUsuario = () => {
-    if (clave.value !== confirmarClave.value) {
-      alert('Las claves no coinciden');
-      return;
-    }
-    // Aquí puedes agregar la lógica para crear el usuario
-    alert('Usuario creado con éxito');
-    router.push({ name: 'Home' })
-    
-  };
-  </script>
+  const apiUrl = 'http://127.0.0.1:8000/api/v1/users/';
+
+
+const crearUsuario = () => {
+  if (clave.value !== confirmarClave.value) {
+    alert('Las claves no coinciden');
+    return;
+  }
+
+  axios
+    .post(apiUrl, {
+      email: correo.value, // Ajusta el campo según lo que espera el backend
+      password: clave.value,
+    })
+    .then(() => {
+      alert('Usuario creado con éxito');
+      router.push({ name: 'Login' });
+    })
+    .catch((error) => {
+      console.error('Error al crear el usuario:', error.response.data);
+      alert(`Error: ${error.response.data.detail || 'Error al crear el usuario'}`);
+    });
+};</script>
   
   <style scoped>
 
