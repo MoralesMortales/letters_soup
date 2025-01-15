@@ -17,6 +17,7 @@
             <li>
               <div class="links">
                 <a href="#">Ver Historial</a>
+
               </div>
             </li>
             <li>
@@ -144,12 +145,11 @@
         </q-dialog>
 
     </div>
-
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref } from 'vue';
 
+import { onMounted, ref } from 'vue';
 import jsPDF from 'jspdf';  // Import jsPDF
 import axios from 'axios';
 const dialog = ref(false); // Controla la visibilidad del diálogo para agregar palabra
