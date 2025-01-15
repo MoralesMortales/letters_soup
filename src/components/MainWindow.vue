@@ -152,7 +152,7 @@
 import { onMounted, ref } from 'vue';
 import jsPDF from 'jspdf';  // Import jsPDF
 import axios from 'axios';
-const dialog = ref(false); // Controla la visibilidad del diálogo para agregar palabra
+const dialog = ref(false);
 const deleteDialog = ref(false); // Controla la visibilidad del diálogo de eliminación
 const showWordsDialog = ref(false); // Controla la visibilidad del diálogo para mostrar palabras
 const selectedWords = ref<string[]>([]); // Palabras seleccionadas para eliminar
