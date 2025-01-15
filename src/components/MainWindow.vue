@@ -77,6 +77,11 @@
           <q-btn label="Insertar Nueva Palabra" color="primary" @click="prompt" />
           <q-btn label="Eliminar Palabra" color="primary" @click="openDeleteDialog" />
 		  <q-btn label="Palabras" color="primary" @click="showWords" /> <!-- Botón modificado -->
+              <div v-if="user_exist">
+
+                <q-btn label="Save Table" color="green" text-color="white" @click="saveOnDb" /> <!-- Botón modificado -->
+          
+                    </div>
         </div>
         <div id="bottom">
           <button id="shuffle_btn" @click="generarSopa">Revolver</button>
@@ -146,11 +151,11 @@
   import { onMounted, ref } from 'vue';
 
 import jsPDF from 'jspdf';  // Import jsPDF
+import axios from 'axios';
 const dialog = ref(false); // Controla la visibilidad del diálogo para agregar palabra
 const deleteDialog = ref(false); // Controla la visibilidad del diálogo de eliminación
 const showWordsDialog = ref(false); // Controla la visibilidad del diálogo para mostrar palabras
 const selectedWords = ref<string[]>([]); // Palabras seleccionadas para eliminar
-
   const newWord = ref("");
   const words = ref<string[]>([]);
   const sidebarVisible = ref(false); // Controla la visibilidad del sidebar
@@ -169,9 +174,10 @@ const selectedWords = ref<string[]>([]); // Palabras seleccionadas para eliminar
     dialog.value = true;
   };
 
+
   const acceptDialog = () => {
   if (newWord.value.trim() !== "") {
-    words.value.push(newWord.value.trim());
+    words.value.push(newWord.value.trim().toUpperCase());
     newWord.value = ""; // Limpia el input
   }
   dialog.value = false;
@@ -194,6 +200,9 @@ const acceptDeleteDialog = () => {
   selectedWords.value = []; // Limpia las selecciones
   deleteDialog.value = false;
 };
+
+
+
 
 // Función para cancelar el diálogo de eliminación
 const cancelDeleteDialog = () => {
@@ -238,12 +247,13 @@ const showWords = () => {
     }
   }
 };
-
-
+const user_email = ref('');
   const getUserFromLocalStorage = () => {
     const userData = localStorage.getItem('user');
     if (userData) {
       user.value = JSON.parse(userData);  // Convierte el string de vuelta a un objeto
+      console.log('!!!', user.value.email)
+      user_email.value = user.value.email
       user_exist.value = true;
     } else {
       user_exist.value = false;
@@ -289,8 +299,6 @@ const generatePDF = () => {
     generarSopa();
   });
 
-
-
   const colocarPalabra = (palabra) => {
   const direcciones = [
     { x: 1, y: 0 }, // Horizontal
@@ -328,6 +336,38 @@ const generatePDF = () => {
   }
   
   return false; // No se pudo colocar la palabra
+};
+
+
+const saveOnDb = async () => {
+
+const obtenerSopaComoString = () => {
+  return sopaDeLetras.value
+    .map((fila) => fila.join('')) // Combina las letras de cada fila con un espacio
+    .join(''); // Une las filas con un salto de línea
+}; 
+let sopa = obtenerSopaComoString()
+
+let sWord = [...words.value];
+
+  try {
+    // Hacer la solicitud POST con los datos
+    const response = await axios.post("http://127.0.0.1:8000/api/v1/create-soup/", {
+      email: user_email.value,
+      row: filas.value,
+      col: columnas.value,
+      soup: sopa,
+      words: sWord,
+    });
+
+    // Manejar respuesta exitosa
+    console.log("Sopa creada:", response.data);
+    alert("Sopa creada con éxito.");
+  } catch (error) {
+    // Manejar errores
+    console.error("Error al crear la sopa:", error.response.data);
+    alert("Error al crear la sopa.");
+  }
 };
 
 </script>
