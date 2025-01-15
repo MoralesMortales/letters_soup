@@ -1,4 +1,3 @@
-
 <template>
   <div id="container">
     <div id="top_part">
@@ -76,7 +75,8 @@
             <input type="number" id="columnasInput" v-model.number="columnas" @input="generarSopa" min="1" />
           </div>
           <q-btn label="Insertar Nueva Palabra" color="primary" @click="prompt" />
-          <q-btn label="Eliminar Palabra" color="primary" @click="prompt" />
+          <q-btn label="Eliminar Palabra" color="primary" @click="openDeleteDialog" />
+		  <q-btn label="Palabras" color="primary" @click="showWords" /> <!-- Botón modificado -->
         </div>
         <div id="bottom">
           <button id="shuffle_btn" @click="generarSopa">Revolver</button>
@@ -84,29 +84,73 @@
       </div>
     </div>
 
-    <!-- Diálogo para insertar nueva palabra -->
-    <q-dialog v-model="dialog">
-      <q-card style="width: 400px; max-width: 90vw;">
-        <q-card-section>
-          <div class="text-h6">Ingresa una nueva palabra</div>
-        </q-card-section>
-        <q-card-section>
-          <q-input outlined v-model="newWord" label="Nueva palabra" autofocus />
-        </q-card-section>
-        <q-card-actions align="right">
-          <q-btn flat label="Cancelar" color="negative" @click="cancelDialog" />
-          <q-btn flat label="Aceptar" color="positive" @click="acceptDialog" />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-  </div>
+            <!-- Diálogo para insertar nueva palabra -->
+			<q-dialog v-model="dialog">
+            <q-card style="width: 400px; max-width: 90vw;">
+                <q-card-section>
+                    <div class="text-h6">Ingresa una nueva palabra</div>
+                </q-card-section>
+                <q-card-section>
+                    <q-input outlined v-model="newWord" label="Nueva palabra" auto-focus />
+                </q-card-section>
+                <q-card-actions align="right">
+                    <q-btn flat label="Cancelar" color="negative" @click="cancelDialog" />
+                    <q-btn flat label="Aceptar" color="positive" @click="acceptDialog" />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
+
+        <!-- Diálogo para eliminar palabras -->
+        <q-dialog v-model="deleteDialog">
+            <q-card style="width: 400px; max-width: 90vw;">
+                <q-card-section>
+                    <div class="text-h6">Selecciona las palabras a eliminar:</div>
+                </q-card-section>
+                <q-card-section>
+                    <div v-for="word in words" :key="word">
+                        <q-checkbox v-model="selectedWords" :label="word" :val=word />
+                    </div>
+					<p v-if="words.length === 0">No hay palabras para eliminar.</p>
+                </q-card-section>
+                <q-card-actions align="right">
+                    <q-btn flat label="Cancelar" color="negative" @click="cancelDeleteDialog" />
+                    <q-btn flat label="Eliminar" color="positive" @click="acceptDeleteDialog" />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
+
+        <!-- Diálogo para mostrar las palabras ingresadas -->
+        <q-dialog v-model="showWordsDialog">
+            <q-card style="width: 400px; max-width: 90vw;">
+                <q-card-section>
+                    <div class="text-h6">Palabras ingresadas:</div>
+                </q-card-section>
+                <q-card-section>
+                    <div>
+                        <li v-for="word in words" :key="word">{{ word }}</li> <!-- Muestra cada palabra en una lista -->
+                    </div>
+                    <p v-if="words.length === 0">No hay palabras ingresadas.</p> <!-- Mensaje si no hay palabras -->
+                </q-card-section>
+                <q-card-actions align="right">
+                    <!-- Cambiar aquí para cerrar el diálogo -->
+                    <q-btn flat label="Cerrar" color="negative" @click.prevent="showWordsDialog = false" />
+                </q-card-actions>
+            </q-card>
+        </q-dialog>
+
+    </div>
+
 </template>
 
 <script setup lang="ts">
   import { onMounted, ref } from 'vue';
 
 import jsPDF from 'jspdf';  // Import jsPDF
-  const dialog = ref(false);
+const dialog = ref(false); // Controla la visibilidad del diálogo para agregar palabra
+const deleteDialog = ref(false); // Controla la visibilidad del diálogo de eliminación
+const showWordsDialog = ref(false); // Controla la visibilidad del diálogo para mostrar palabras
+const selectedWords = ref<string[]>([]); // Palabras seleccionadas para eliminar
+
   const newWord = ref("");
   const words = ref<string[]>([]);
   const sidebarVisible = ref(false); // Controla la visibilidad del sidebar
@@ -126,21 +170,45 @@ import jsPDF from 'jspdf';  // Import jsPDF
   };
 
   const acceptDialog = () => {
-    if (newWord.value.trim() !== "") {
-      words.value.push(newWord.value.trim());
-      newWord.value = "";
-    }
-    dialog.value = false;
-  };
+  if (newWord.value.trim() !== "") {
+    words.value.push(newWord.value.trim());
+    newWord.value = ""; // Limpia el input
+  }
+  dialog.value = false;
+};
+
+// Función para cancelar el diálogo
+const cancelDialog = () => {
+  dialog.value = false;
+  newWord.value = ""; // Limpia el input
+};
+
+// Función para abrir el cuadro de diálogo de eliminación
+const openDeleteDialog = () => {
+  deleteDialog.value = true;
+};
+
+// Función para manejar la aceptación del diálogo de eliminación
+const acceptDeleteDialog = () => {
+  words.value = words.value.filter(word => !selectedWords.value.includes(word));
+  selectedWords.value = []; // Limpia las selecciones
+  deleteDialog.value = false;
+};
+
+// Función para cancelar el diálogo de eliminación
+const cancelDeleteDialog = () => {
+  deleteDialog.value = false;
+  selectedWords.value = []; // Limpia las selecciones
+};
+
+// Función para abrir el cuadro de diálogo que muestra las palabras ingresadas
+const showWords = () => {
+  showWordsDialog.value = true;
+};
 
   const closeSession = () => {
     localStorage.clear();
     location.reload();
-  };
-
-  const cancelDialog = () => {
-    dialog.value = false;
-    newWord.value = "";
   };
 
   const generarCaracterAleatorio = (): string => {
@@ -149,11 +217,28 @@ import jsPDF from 'jspdf';  // Import jsPDF
   };
 
   const generarSopa = () => {
-    if (filas.value < 1 || columnas.value < 1) return;
-    sopaDeLetras.value = Array.from({ length: filas.value }, () =>
-      Array.from({ length: columnas.value }, generarCaracterAleatorio)
-    );
-  };
+  if (filas.value < 1 || columnas.value < 1) return;
+
+  // Inicializar la sopa de letras vacía
+  sopaDeLetras.value = Array.from({ length: filas.value }, () =>
+    Array.from({ length: columnas.value }, () => '')
+  );
+
+  // Colocar las palabras en la sopa de letras
+  words.value.forEach(palabra => {
+    colocarPalabra(palabra);
+  });
+
+  // Llenar los espacios vacíos con letras aleatorias
+  for (let i = 0; i < filas.value; i++) {
+    for (let j = 0; j < columnas.value; j++) {
+      if (sopaDeLetras.value[i][j] === '') {
+        sopaDeLetras.value[i][j] = generarCaracterAleatorio();
+      }
+    }
+  }
+};
+
 
   const getUserFromLocalStorage = () => {
     const userData = localStorage.getItem('user');
@@ -203,6 +288,48 @@ const generatePDF = () => {
     getUserFromLocalStorage();
     generarSopa();
   });
+
+
+
+  const colocarPalabra = (palabra) => {
+  const direcciones = [
+    { x: 1, y: 0 }, // Horizontal
+    { x: 0, y: 1 }, // Vertical
+    { x: 1, y: 1 }, // Diagonal derecha
+    { x: -1, y: 1 }, // Diagonal izquierda
+  ];
+
+  for (let i = 0; i < 100; i++) { // Intentar hasta 100 veces
+    const direccion = direcciones[Math.floor(Math.random() * direcciones.length)];
+    const filaInicio = Math.floor(Math.random() * filas.value);
+    const colInicio = Math.floor(Math.random() * columnas.value);
+    
+    let puedeColocar = true;
+    
+    for (let j = 0; j < palabra.length; j++) {
+      const nuevaFila = filaInicio + j * direccion.y;
+      const nuevaColumna = colInicio + j * direccion.x;
+
+      if (nuevaFila < 0 || nuevaFila >= filas.value || nuevaColumna < 0 || nuevaColumna >= columnas.value || 
+          (sopaDeLetras.value[nuevaFila] && sopaDeLetras.value[nuevaFila][nuevaColumna] !== '')) {
+        puedeColocar = false;
+        break;
+      }
+    }
+
+    if (puedeColocar) {
+      for (let j = 0; j < palabra.length; j++) {
+        const nuevaFila = filaInicio + j * direccion.y;
+        const nuevaColumna = colInicio + j * direccion.x;
+        sopaDeLetras.value[nuevaFila][nuevaColumna] = palabra[j];
+      }
+      return true; // La palabra fue colocada exitosamente
+    }
+  }
+  
+  return false; // No se pudo colocar la palabra
+};
+
 </script>
 
 
