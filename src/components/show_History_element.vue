@@ -12,8 +12,7 @@
       <!-- Sidebar -->
       <div v-if="sidebarVisible" id="sidebar" style="margin-top:30px; z-index: 3; margin-left:250px; margin-top:75px;">
         <ul>
-          <!-- Solo muestra este bloque cuando user_exist sea verdadero -->
-          <div v-if="user_exist">
+          <div>
             <li>
               <div class="links">
                 <router-link to="/History">Ver historial</router-link>
@@ -31,19 +30,6 @@
             </li>
           </div>
 
-          <!-- Si user_exist es falso, muestra las opciones de login o registro -->
-          <div v-else>
-            <li>
-              <div class="links">
-                <router-link to="/Register">Registrar</router-link>
-              </div>		
-            </li>
-            <li>
-              <div class="links">
-                <router-link to="/Login">Iniciar sesión</router-link>
-              </div>
-            </li>
-          </div>
         </ul>
       </div>
 
@@ -81,13 +67,12 @@
           </div>
 		  <q-btn label="Palabras" color="primary" @click="showWords" /> <!-- Botón modificado -->
           
-                    </div>
+      </div>
         </div>
         <div id="bottom">
           <button id="shuffle_btn" @click="generarSopa">Revolver</button>
         </div>
       </div>
-    </div>
 
         <!-- Diálogo para mostrar las palabras ingresadas -->
         <q-dialog v-model="showWordsDialog">
@@ -111,25 +96,30 @@
     </div>
 </template>
 <script setup>
+import axios from "axios";
 import { onMounted, ref } from "vue";
-const userId = 1;
-  const user = ref(null);
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const soupId = route.params.soup_id;
+console.log(soupId, 'MITOOO')
+
+let userId = 1;
+const user = ref(null);
+
   const getUserFromLocalStorage = () => {
     const userData = localStorage.getItem('user');
     if (userData) {
       user.value = JSON.parse(userData);  // Convierte el string de vuelta a un objeto
-      user_exist.value = true;
       userId = user.value.id
-    } else {
-      user_exist.value = false;
-    }
-  };
+    } 
+    };
 const soups = ref([]);
 
 const fetchSoups = async () => {
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/v1/sopas/?user_id=${userId}`);
+    const response = await axios.get(`http://127.0.0.1:8000/api/v1/sopas/${userId}/${soupId}`);
     soups.value = response.data;
+    console.log(soups.value)
   } catch (error) {
     console.error("Error al obtener las sopas:", error);
   }

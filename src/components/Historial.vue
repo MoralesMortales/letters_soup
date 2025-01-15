@@ -18,6 +18,8 @@
 import axios from "axios";
 import { onMounted, ref } from "vue";
 
+import { useRouter } from 'vue-router';
+const router = useRouter();
 let userId = 1;
   const user = ref(null);
   const getUserFromLocalStorage = () => {
@@ -29,6 +31,11 @@ let userId = 1;
     } else {
     }
   };
+
+const goTo = (soupId) => {
+  router.push({ name: 'detail_soup', params: { soup_id: soupId } });
+}
+
 const soups = ref([]);
 
 const fetchSoups = async () => {
