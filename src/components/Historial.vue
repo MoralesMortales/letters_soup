@@ -1,19 +1,48 @@
 <template>
-    <div class="page-container">
-        <div class="login-container">
-        <h2>Historial</h2>
-        <form>
-            <div class="elementoHistorial">
-                <p>Sopa 1</p>
-                <font-awesome-icon :icon="['fas', 'eye']" size="2xl"/>
-            </div>
-            <button type="submit" @click="comprobe">Regresar</button>
-        </form>
-        </div>
+  <div>
+    <h2>Mis Sopas</h2>
+    <div v-if="soups.length === 0">
+      <p>No tienes sopas disponibles.</p>
     </div>
+    <div v-else>
+      <ul>
+        <li v-for="soup in soups" :key="soup.id">
+          <button @click="goTo(soup.id)"><strong>Sopa </strong> {{ soup.id }}</button><br>
+        </li>
+      </ul>
+    </div>
+  </div>
   </template>
 
 <script setup>
+import axios from "axios";
+import { onMounted, ref } from "vue";
+
+let userId = 1;
+  const user = ref(null);
+  const getUserFromLocalStorage = () => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      user.value = JSON.parse(userData);  // Convierte el string de vuelta a un objeto
+      userId = user.value.id
+      console.log(userId)
+    } else {
+    }
+  };
+const soups = ref([]);
+
+const fetchSoups = async () => {
+  try {
+    const response = await axios.get(`http://127.0.0.1:8000/api/v1/sopas/${userId}`);
+    soups.value = response.data;
+  } catch (error) {
+    console.error("Error al obtener las sopas:", error);
+  }
+};
+  onMounted(() => {
+    getUserFromLocalStorage();
+  fetchSoups();
+  });
 
 </script>
 
