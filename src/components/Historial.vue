@@ -4,20 +4,24 @@
         <h2>Historial</h2>
         <form>
             <div class="elementoHistorial">
-                <p>Sopa 1</p>
-                <font-awesome-icon :icon="['fas', 'eye']" size="2xl"/>
+                <h6>Sopa 1</h6>
+                <font-awesome-icon :icon="['fas', 'eye']" size="2xl" class="ojo"/>
             </div>
-            <button type="submit" @click="comprobe">Regresar</button>
+            <router-link to="/" class="router">Regresar</router-link>
         </form>
         </div>
     </div>
   </template>
 
 <script setup>
-
 </script>
 
 <style scoped>
+
+  .ojo:hover {
+    color: teal;
+    cursor: pointer;
+  }
 
   .page-container {
     background-color: #99d3f7; /* Color de fondo para toda la página */
@@ -57,33 +61,41 @@
     box-sizing: border-box;
   }
   
-  button {
-    width: 100%;
+  .router {
+    display: flex;
+    justify-content: center ;
+    width: 70%;
     padding: 0.7em;
     background: rgb(28, 111, 255);
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    margin: auto;
+    text-decoration: none;
+    font-size: 120%;
   }
   
-  button:hover {
+  .router:hover {
     background: blue;
   }
 
   .elementoHistorial {
+    margin: 20px auto;
+    gap: 50px;
     display: flex;
     justify-items: center;
     justify-content: center;
     align-content: center;
     align-items: center;
-    border: solid skyblue;
+    border: solid rgb(250, 208, 153);
     border-radius: 10px;
-    background-color: skyblue;
+    background-color: rgb(250, 208, 153);
+    width: 50%
   }
 
   p {
-    padding-right: 100px;
+    margin: 0px;
   }
 
   </style>
