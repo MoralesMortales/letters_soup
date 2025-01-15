@@ -1,7 +1,7 @@
 <template>
     <div class="page-container">
         <div class="login-container">
-        <h2>Historial</h2>
+        <h2>Mis sopas</h2>
         <form>
             <div v-if="soups.length === 0">
                 <p>No tienes sopas disponibles.</p>
@@ -9,9 +9,9 @@
             <div v-else>
                 <ul>
                     <li v-for="soup in soups" :key="soup.id">
-                        <div class="elementoHistorial">
-                            <p>Sopa {{counter()}}</p>
-                            <font-awesome-icon class="ojo" :icon="['fas', 'eye']" size="2xl"/>
+                        <div class="elementoHistorial" >
+                            <p>Sopa {{ counter() }}</p>
+                            <router-link class="linkOjo" :to="`/detail${num}`"><font-awesome-icon class="ojo" :icon="['fa', 'eye']" size="2xl" style="color:#444"  /></router-link>
                         </div>
                     </li>
                 </ul>
@@ -28,10 +28,12 @@ import axios from "axios";
 import { onMounted, ref } from "vue";
 
 let num = 0;
+
     function counter() {
-    ++num;
+    ++num;    
     return num
   }
+
 
 let userId = 1;
   const user = ref(null);
@@ -44,6 +46,11 @@ let userId = 1;
     } else {
     }
   };
+
+const goTo = (soupId) => {
+  router.push({ name: 'detail_soup', params: { soup_id: soupId } });
+}
+
 const soups = ref([]);
 
 const fetchSoups = async () => {
@@ -66,10 +73,15 @@ const fetchSoups = async () => {
         list-style-type: none;
     }
 
-  .ojo:hover {
-    color: teal;
+  .linkOjo:visited {
+    color:inherit
+  }
+
+  .linkOjo:hover {
     cursor: pointer;
   }
+
+  
 
   .page-container {
     background-color: #99d3f7; /* Color de fondo para toda la página */
@@ -145,6 +157,9 @@ const fetchSoups = async () => {
   p {
     margin: 0px;
     text-align: center;
+  }
+
+  form {
   }
 
   </style>

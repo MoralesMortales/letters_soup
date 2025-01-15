@@ -21,7 +21,7 @@
             </li>
             <li>
               <div class="links">
-                <button @click="closeSession" style="font-size:18px; border:none; background-color:transparent;">Cerrar Sesión</button>
+                <button id="locura" @click="closeSession" style="font-size:18px; border:none; background-color:transparent;">Cerrar Sesión</button>
               </div>
             </li>
           </div>
@@ -400,6 +400,11 @@ let sWord = [...words.value];
   padding-left: 30px;
   height: 70px;
   border-bottom: 1px solid #a2a2a2;
+}
+
+#locura:hover {
+  color: green;
+  cursor: pointer;
 }
 
 #top_part{
