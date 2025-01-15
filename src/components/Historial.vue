@@ -7,7 +7,7 @@
     <div v-else>
       <ul>
         <li v-for="soup in soups" :key="soup.id">
-          <button @click="goTo(soup.id)"><strong>Sopa </strong> {{ soup.id }}</button><br>
+          <button @click="goTo(soup.email)"><strong>Sopa </strong> {{ soup.id }}</button><br>
         </li>
       </ul>
     </div>
