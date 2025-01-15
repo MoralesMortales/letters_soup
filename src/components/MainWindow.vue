@@ -16,8 +16,7 @@
           <div v-if="user_exist">
             <li>
               <div class="links">
-                <a href="#">Ver Historial</a>
-
+                <router-link to="/History">Ver historial</router-link>
               </div>
             </li>
             <li>
