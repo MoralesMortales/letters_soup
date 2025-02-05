@@ -1,4 +1,3 @@
-
 <template>
   <div id="container">
     <div id="top_part">
@@ -9,13 +8,19 @@
       </div>
     </div>
 
-    <div id="mainPart" :class="{'sidebar-visible': sidebarVisible}">
+    <div id="mainPart" :class="{ 'sidebar-visible': sidebarVisible }">
       <div id="left_main">
-        <div id="sopa_box">
-          <table style="padding:15px; width:100%; height:100%; text-align: center; vertical-align: middle;">
+        <div id="sopa_box" style="overflow: hidden;">
+          <table style="
+              padding: 15px;
+              width: 100%;
+              height: 100%;
+              text-align: center;
+              vertical-align: middle;
+            ">
             <tbody>
               <tr v-for="(fila, i) in sopaDeLetras" :key="i">
-                <td v-for="(letra, j) in fila" :key="j" style="text-align: center; vertical-align: middle;">
+                <td v-for="(letra, j) in fila" :key="j" style="text-align: center; vertical-align: middle">
                   {{ letra }}
                 </td>
               </tr>
@@ -49,7 +54,7 @@
       </div>
 
       <q-dialog v-model="showWordsDialog">
-        <q-card style="width: 400px; max-width: 90vw;">
+        <q-card style="width: 400px; max-width: 90vw">
           <q-card-section>
             <div class="text-h6">Palabras ingresadas:</div>
           </q-card-section>
@@ -68,54 +73,60 @@
   </div>
 </template>
 <script setup>
-
-import { ref, onMounted } from 'vue';
-import jsPDF from 'jspdf';
-import axios from 'axios';
-import { useRoute } from 'vue-router';
+import { ref, onMounted } from "vue";
+import jsPDF from "jspdf";
+import axios from "axios";
+import { useRoute } from "vue-router";
 const route = useRoute();
 const soupId = route.params.soup_id;
-console.log(soupId, 'MITOOO')
-
-let userId = 1;
+console.log(soupId, "MITOOO");
+let userId = 0;
 const user = ref(null);
-
-  const getUserFromLocalStorage = () => {
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      user.value = JSON.parse(userData);  // Convierte el string de vuelta a un objeto
-      userId = user.value.id
-    } 
-    };
 const soups = ref({});
 const sopaDeLetras = ref([]);
 const words = ref([]);
 const cols = ref(0);
 const rows = ref(0);
-const soup = ref('');
-const showWordsDialog = ref(false); // Para mostrar el diálogo con las palabras
+const soup = ref("");
+const showWordsDialog = ref(false);
 
-// Función para obtener los datos de la API
+const getUserFromLocalStorage = () => {
+  const userData = localStorage.getItem("user");
+  if (userData) {
+    user.value = JSON.parse(userData);
+    console.log("esto es: ", user.value.id);
+    userId = user.value.id;
+  }
+};
+
 const fetchSoups = async () => {
   try {
-    const response = await axios.get(`http://127.0.0.1:8000/api/v1/sopas/${userId}/${soupId}`);
+    const response = await axios.get(
+      `http://127.0.0.1:8000/api/v1/sopas/${userId}/${soupId}`,
+    );
+    console.log(userId, " - ", soupId);
     soups.value = response.data;
-    words.value = soups.value.words; // Asignamos las palabras
-    cols.value = soups.value.col; // Asignamos las columnas
-    rows.value = soups.value.row; // Asignamos las filas
-    soup.value = soups.value.soup; // Asignamos la sopa de letras
+    words.value = soups.value.words;
+    cols.value = soups.value.col;
+    rows.value = soups.value.row;
+    soup.value = soups.value.soup;
 
-    crearSopa(); // Crear la sopa de letras después de obtener los datos
+    crearSopa();
   } catch (error) {
     console.error("Error al obtener las sopas:", error);
   }
 };
 
+onMounted(() => {
+    getUserFromLocalStorage();
+  fetchSoups(); // Cargar los datos cuando el componente se monta
+});
+
 // Crear la sopa de letras
 const crearSopa = () => {
   const sopa = [];
   const soupString = soup.value; // Tomamos la cadena de sopa de la API
-  const letras = soupString.split(''); // Convertimos la cadena en un array de letras
+  const letras = soupString.split(""); // Convertimos la cadena en un array de letras
 
   let letraIndex = 0;
 
@@ -136,16 +147,13 @@ const showWords = () => {
   showWordsDialog.value = true;
 };
 
-onMounted(() => {
-  fetchSoups(); // Cargar los datos cuando el componente se monta
-});
 
 const generatePDF = () => {
   const doc = new jsPDF();
 
   // Add Title to PDF
   doc.setFontSize(15);
-  doc.text('Generador de Sopa de Letras', 70, 20);
+  doc.text("Generador de Sopa de Letras", 70, 20);
 
   // Set table position and size
   const startY = 40; // Start Y position for the table
@@ -172,16 +180,16 @@ const generatePDF = () => {
   }
 
   // Save the generated PDF
-  doc.save('sopa_de_letras.pdf');
-}
+  doc.save("sopa_de_letras.pdf");
+};
 </script>
 
 <style>
-#title{
+#title {
   font-size: 30px;
 }
 
-#container{
+#container {
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -194,11 +202,12 @@ const generatePDF = () => {
   cursor: pointer;
 }
 
-#bars:active, #bars:visited{
+#bars:active,
+#bars:visited {
   color: #0f0;
 }
 
-.links{
+.links {
   width: 100%;
   display: flex;
   align-items: center;
@@ -207,36 +216,36 @@ const generatePDF = () => {
   border-bottom: 1px solid #a2a2a2;
 }
 
-#top_part{
+#top_part {
   height: 7%;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-#sopa_box{
+#sopa_box {
   width: 80%;
   height: 80%;
   margin-top: 35px;
   background-color: #999;
 }
 
-#export_options{
+#export_options {
   width: 80%;
   height: 10%;
   display: flex;
   justify-content: center;
-  align-items:center;
+  align-items: center;
 }
 
-#mainPart{
+#mainPart {
   height: 95%;
   background-color: #99d3f7;
   display: flex;
   transition: margin-left 0.3s ease;
 }
 
-#left_main{
+#left_main {
   width: 45%;
   display: flex;
   flex-direction: column;
@@ -244,14 +253,14 @@ const generatePDF = () => {
   justify-content: space-around;
 }
 
-#right_main{
+#right_main {
   width: 55%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-#top{
+#top {
   height: 18%;
   margin-top: 47px;
   display: flex;
@@ -259,7 +268,7 @@ const generatePDF = () => {
   justify-content: center;
 }
 
-#pdf_option{
+#pdf_option {
   height: 90%;
   width: 50%;
   background-color: #fff;
@@ -269,11 +278,10 @@ const generatePDF = () => {
   align-items: center;
 }
 
-#pdf_option:hover{
+#pdf_option:hover {
   background-color: #ff0;
   cursor: pointer;
 }
-
 
 #sidebar {
   position: fixed;
@@ -290,7 +298,7 @@ const generatePDF = () => {
   color: #222;
 }
 
-#sidebar:first-child{
+#sidebar:first-child {
   border-top: 1px solid #a2a2a2;
 }
 
@@ -304,42 +312,43 @@ const generatePDF = () => {
 }
 
 #sidebar li {
-  translate: all .3s ease;
+  translate: all 0.3s ease;
 }
 
 #sidebar li a {
   color: white;
   text-decoration: none;
   font-size: 18px;
-  translate: all .3s ease;
+  translate: all 0.3s ease;
   color: #222;
 }
 
 #sidebar li a:hover {
   color: green;
-
 }
 
 /* Aplica la animación cuando el sidebar se muestra */
 #sidebar.v-show {
-  transform: translateX(0); /* Muestra el sidebar */
-  transition: all .3s ease;
+  transform: translateX(0);
+  /* Muestra el sidebar */
+  transition: all 0.3s ease;
 }
 
 /* Desplazar la parte principal hacia la derecha cuando el sidebar está visible */
 #mainPart.sidebar-visible {
-  margin-left: 250px; /* Empuja el contenido hacia la derecha */
+  margin-left: 250px;
+  /* Empuja el contenido hacia la derecha */
 }
 
-#middle{
+#middle {
   height: 10%;
   display: grid;
-  grid-template-columns: repeat(2,1fr);
+  grid-template-columns: repeat(2, 1fr);
   align-content: space-around;
   justify-items: center;
 }
 
-#bottom{
+#bottom {
   height: 15%;
   margin-bottom: 9em;
   display: flex;
@@ -347,22 +356,22 @@ const generatePDF = () => {
   align-items: center;
 }
 
-#bottom > #shuffle_btn{
+#bottom>#shuffle_btn {
   height: 50%;
   width: 30%;
   background-color: #fff;
   border-radius: 3px;
   border: 1px solid #000;
   cursor: pointer;
-  transition: all .12s ease;
+  transition: all 0.12s ease;
 }
 
-#bottom > #shuffle_btn:hover{
+#bottom>#shuffle_btn:hover {
   background-color: #aaa;
-  transition: all .12s ease;
+  transition: all 0.12s ease;
 }
 
-#middle > .buttom{
+#middle>.buttom {
   width: 200px;
   height: 40px;
   background-color: #fff;
@@ -373,11 +382,14 @@ const generatePDF = () => {
   gap: 5px;
 }
 
-#middle > .buttom > input{
+#middle>.buttom>input {
   width: 60%;
 }
 
-input, input:hover, input::selection, input:active{
+input,
+input:hover,
+input::selection,
+input:active {
   border: none;
   background-color: transparent;
 }

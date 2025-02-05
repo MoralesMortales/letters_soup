@@ -4,14 +4,14 @@
         <h2>Mis sopas</h2>
         <form>
             <div v-if="soups.length === 0">
-                <p>No tienes sopas disponibles.</p>
+                <p style="padding-bottom:30px; padding-top: 5px;">No tienes sopas disponibles.</p>
             </div>
             <div v-else>
                 <ul>
                     <li v-for="soup in soups" :key="soup.id">
                         <div class="elementoHistorial" >
                             <p>Sopa {{ counter() }}</p>
-                            <router-link class="linkOjo" :to="`/detail${num}`"><font-awesome-icon class="ojo" :icon="['fa', 'eye']" size="2xl" style="color:#444"  /></router-link>
+                <router-link class="linkOjo" :to="`/detail${soup.id}`"><font-awesome-icon class="ojo" :icon="['fa', 'eye']" size="2xl" style="color:#444"  /></router-link>
                         </div>
                     </li>
                 </ul>
